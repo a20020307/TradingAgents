@@ -1,0 +1,24 @@
+# LLM 配置
+llm_provider: ollama                   # ollama / openai / openrouter / google / anthropic 等
+backend_url: http://localhost:11434    # Ollama 服务地址（如不用 Ollama，可留空或删掉）
+deep_think_llm: qwen3:32b              # 深度推理大模型
+quick_think_llm: qwen3:32b             # 快速推理小模型
+
+# OpenAI 云模型（如用 Ollama 可不用填，但建议留作 fallback）
+openai_api_key: "sk-xxx..."            # OpenAI API Key
+openai_model: gpt-3.5-turbo-1106       # OpenAI 模型名称
+openai_base_url: https://api.openai.com/v1  # 一般无需更改
+
+# 项目通用设置
+max_debate_rounds: 1                   # 多轮推理最大轮数
+online_tools: true                     # 是否允许联网抓取数据
+project_dir: /opt/TradingAgents        # 项目根目录绝对路径
+agent_type: binance                    # 支持 binance / coingecko / lens / thegraph 等（未来扩展）
+
+# Binance 交易&行情配置
+binance:
+  api_key: "your_binance_api_key"
+  api_secret: "your_binance_api_secret"
+  symbol: "BTCUSDT"
+  testnet: true                        # 用于测试环境，不影响实盘
+
