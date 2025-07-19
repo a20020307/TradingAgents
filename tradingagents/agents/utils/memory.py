@@ -1,25 +1,19 @@
 import chromadb
 from chromadb.config import Settings
-from openai import OpenAI
-
+import numpy as np
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
-        if config["backend_url"] == "http://localhost:11434/v1":
-            self.embedding = "nomic-embed-text"
-        else:
-            self.embedding = "text-embedding-3-small"
-        self.client = OpenAI(base_url=config["backend_url"])
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.create_collection(name=name)
+        self.config = config
 
     def get_embedding(self, text):
-        """Get OpenAI embedding for a text"""
-        
-        response = self.client.embeddings.create(
-            model=self.embedding, input=text
-        )
-        return response.data[0].embedding
+        """
+        返回随机 embedding，适合无 OpenAI/本地 embedding API 时临时使用。
+        若你后续有 Ollama embedding API，可把此函数换成实际调用。
+        """
+        return np.random.rand(384).tolist()
 
     def add_situations(self, situations_and_advice):
         """Add financial situations and their corresponding advice. Parameter is a list of tuples (situation, rec)"""
@@ -45,7 +39,7 @@ class FinancialSituationMemory:
         )
 
     def get_memories(self, current_situation, n_matches=1):
-        """Find matching recommendations using OpenAI embeddings"""
+        """Find matching recommendations using embedding"""
         query_embedding = self.get_embedding(current_situation)
 
         results = self.situation_collection.query(
@@ -66,10 +60,9 @@ class FinancialSituationMemory:
 
         return matched_results
 
-
 if __name__ == "__main__":
     # Example usage
-    matcher = FinancialSituationMemory()
+    matcher = FinancialSituationMemory("test_memory", config={})
 
     # Example data
     example_data = [

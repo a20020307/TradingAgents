@@ -19,7 +19,6 @@ binance_agent = BinanceTradingAgent(
 ta = TradingAgentsGraph(
     debug=True,
     config=config,
-    agent=binance_agent
 )
 
 # 推理决策（用BTCUSDT和今天日期）

@@ -1,7 +1,6 @@
 from binance.client import Client
-from tradingagents.agents.trading_agent import TradingAgent
 
-class BinanceTradingAgent(TradingAgent):
+class BinanceTradingAgent:
     def __init__(self, api_key, api_secret, symbol="BTCUSDT", testnet=True):
         self.symbol = symbol
         self.client = Client(api_key, api_secret)
