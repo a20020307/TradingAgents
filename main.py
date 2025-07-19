@@ -1,21 +1,31 @@
+import yaml
 from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.agents.binance_agent import BinanceTradingAgent
 
-# Create a custom config
-config = DEFAULT_CONFIG.copy()
-config["llm_provider"] = "google"  # Use a different model
-config["backend_url"] = "https://generativelanguage.googleapis.com/v1"  # Use a different backend
-config["deep_think_llm"] = "gemini-2.0-flash"  # Use a different model
-config["quick_think_llm"] = "gemini-2.0-flash"  # Use a different model
-config["max_debate_rounds"] = 1  # Increase debate rounds
-config["online_tools"] = True  # Increase debate rounds
+# 加载YAML配置
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
-# Initialize with custom config
-ta = TradingAgentsGraph(debug=True, config=config)
+# 初始化Binance Agent
+binance_cfg = config.get("binance", {})
+binance_agent = BinanceTradingAgent(
+    api_key=binance_cfg["api_key"],
+    api_secret=binance_cfg["api_secret"],
+    symbol=binance_cfg.get("symbol", "BTCUSDT"),
+    testnet=binance_cfg.get("testnet", True)
+)
 
-# forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
-print(decision)
+# 初始化TradingAgentsGraph
+ta = TradingAgentsGraph(
+    debug=True,
+    config=config,
+    agent=binance_agent
+)
 
-# Memorize mistakes and reflect
-# ta.reflect_and_remember(1000) # parameter is the position returns
+# 推理决策（用BTCUSDT和今天日期）
+from datetime import date
+today = date.today().isoformat()
+
+_, decision = ta.propagate("BTCUSDT", today)
+print("决策结果：", decision)
+
